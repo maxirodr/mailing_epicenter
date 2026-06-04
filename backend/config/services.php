@@ -44,7 +44,7 @@ return [
 
     'webauthn' => [
         'rp_id' => env('WEBAUTHN_RP_ID', 'localhost'),
-        'rp_name' => env('WEBAUTHN_RP_NAME', 'NexoSmart Mail'),
+        'rp_name' => env('WEBAUTHN_RP_NAME', 'Epicenter Mail'),
         'origin' => env('WEBAUTHN_ORIGIN', 'https://localhost'),
     ],
 

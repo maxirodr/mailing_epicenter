@@ -217,7 +217,7 @@ function UserFormModal({
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3.5 py-2.5 text-sm text-gray-100 placeholder-gray-500 outline-none focus:border-blue-500"
-            placeholder="john@nexosmart.com"
+            placeholder="john@epicentersport.com"
           />
         </div>
 

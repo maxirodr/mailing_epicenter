@@ -116,7 +116,7 @@ export default function LoginPage() {
           className="text-gradient mb-1 text-center text-2xl font-semibold animate-blurIn"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
-          NexoSmart Mail
+          Epicenter Mail
         </h1>
         <p
           className="mb-8 text-center text-sm animate-blurIn"

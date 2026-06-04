@@ -133,7 +133,7 @@ export const useComposeStore = create<ComposeStore>()(
       reset: () => set({ instances: [] }),
     }),
     {
-      name: 'nexosmart-compose',
+      name: 'epicenter-compose',
       partialize: (state) => ({
         instances: state.instances,
       }),

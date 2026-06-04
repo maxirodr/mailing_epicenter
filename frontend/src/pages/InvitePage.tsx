@@ -90,7 +90,7 @@ export default function InvitePage() {
           className="mb-1 text-center text-2xl font-semibold"
           style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}
         >
-          NexoSmart Mail
+          Epicenter Mail
         </h1>
 
         {loading ? (

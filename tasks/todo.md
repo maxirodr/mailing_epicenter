@@ -1,4 +1,4 @@
-# NexoSmart Mail — Implementation Progress
+# Epicenter Mail — Implementation Progress
 
 ## Phase 1: Project Scaffolding & Auth
 - [x] Create Laravel 12 API-only backend

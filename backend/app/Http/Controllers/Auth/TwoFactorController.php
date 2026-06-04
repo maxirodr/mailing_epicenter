@@ -31,7 +31,7 @@ class TwoFactorController extends Controller
         $request->session()->put('2fa_setup_secret', $secret);
 
         $qrCodeUrl = $this->google2fa->getQRCodeUrl(
-            'NexoSmart Mail',
+            'Epicenter Mail',
             $user->email,
             $secret,
         );

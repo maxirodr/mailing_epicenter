@@ -1,7 +1,7 @@
 {
-  "name": "NexoSmart Mail",
-  "short_name": "NexoMail",
-  "description": "Email client by NexoSmart",
+  "name": "Epicenter Mail",
+  "short_name": "EpicenterMail",
+  "description": "Email client by Epicenter",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a12",

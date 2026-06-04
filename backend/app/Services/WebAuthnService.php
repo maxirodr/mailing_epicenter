@@ -31,7 +31,7 @@ class WebAuthnService
     public function __construct()
     {
         $this->rpId = config('services.webauthn.rp_id', 'localhost');
-        $this->rpName = config('services.webauthn.rp_name', 'NexoSmart Mail');
+        $this->rpName = config('services.webauthn.rp_name', 'Epicenter Mail');
         $this->origin = config('services.webauthn.origin', 'https://localhost');
     }
 

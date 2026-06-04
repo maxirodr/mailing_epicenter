@@ -23,13 +23,13 @@ class ImportFromImap extends Command
         {--port=993 : IMAP server port}
         {--username= : IMAP username (email address)}
         {--password= : IMAP password}
-        {--mailbox-id= : Target mailbox ID in NexoSmart}
+        {--mailbox-id= : Target mailbox ID in Epicenter}
         {--folders=INBOX,Sent,Drafts : Comma-separated IMAP folders to import}
         {--dry-run : Show what would be imported without actually importing}
         {--skip-attachments : Skip downloading attachments}
         {--since= : Only import emails since this date (Y-m-d)}';
 
-    protected $description = 'Import emails from an external IMAP server into NexoSmart Mail';
+    protected $description = 'Import emails from an external IMAP server into Epicenter Mail';
 
     private int $imported = 0;
     private int $skipped = 0;

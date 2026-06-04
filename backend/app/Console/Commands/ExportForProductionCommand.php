@@ -49,7 +49,7 @@ class ExportForProductionCommand extends Command
         }
 
         // Header
-        fwrite($handle, "-- NexoSmart Mail Production Import\n");
+        fwrite($handle, "-- Epicenter Mail Production Import\n");
         fwrite($handle, "-- Generated: ".now()->toDateTimeString()."\n");
         fwrite($handle, "-- Mailbox mapping: ".json_encode($mailboxMap)."\n\n");
         fwrite($handle, "SET FOREIGN_KEY_CHECKS = 0;\n");

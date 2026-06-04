@@ -27,7 +27,7 @@ export default function IOSInstallPrompt() {
       {step === 'ask' ? (
         <div className="space-y-4">
           <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed">
-            To receive push notifications on iOS, you need to install NexoSmart Mail as an app on your home screen.
+            To receive push notifications on iOS, you need to install Epicenter Mail as an app on your home screen.
           </p>
           <p style={{ color: 'var(--text-secondary)' }} className="text-sm">
             Want us to show you how? It only takes a few seconds.
@@ -123,7 +123,7 @@ export default function IOSInstallPrompt() {
                 Open from your Home Screen
               </p>
               <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                Launch NexoSmart Mail from the new icon. You'll be prompted to allow notifications.
+                Launch Epicenter Mail from the new icon. You'll be prompted to allow notifications.
               </p>
             </div>
           </div>

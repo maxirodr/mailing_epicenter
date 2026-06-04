@@ -1,4 +1,4 @@
-# Lessons Learned — NexoSmart Mail
+# Lessons Learned — Epicenter Mail
 
 ## Patterns & Corrections
 *(Updated as corrections are made)*

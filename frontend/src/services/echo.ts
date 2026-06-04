@@ -7,7 +7,7 @@ import api from './api';
 
 const echo = new Echo({
     broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY || 'nexosmart-mail-key',
+    key: import.meta.env.VITE_REVERB_APP_KEY || 'epicenter-mail-key',
     wsHost: import.meta.env.VITE_REVERB_HOST || 'localhost',
     wsPort: import.meta.env.VITE_REVERB_PORT || 8080,
     wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
