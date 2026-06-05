@@ -113,8 +113,31 @@ class SendOutboundEmail implements ShouldQueue
         $resend = Resend::client(config('services.resend.key'));
         $result = $resend->emails->send($payload);
 
+        // The Resend PHP SDK does NOT throw on API errors (e.g. unverified
+        // sending domain → 403). Instead it returns a Resend\Email whose
+        // attributes are the error body (statusCode + message). If there is no
+        // id, the send was rejected: fail loudly so the job lands in
+        // failed_jobs and the error is logged, rather than silently marking the
+        // email as "sent".
+        if (empty($result->id)) {
+            $error = method_exists($result, 'toArray') ? $result->toArray() : [];
+            $message = $error['message'] ?? 'Unknown error';
+            $statusCode = $error['statusCode'] ?? null;
+
+            Log::error('Resend rejected outbound email', [
+                'email_id' => $email->id,
+                'from' => $fromAddress,
+                'status_code' => $statusCode,
+                'message' => $message,
+            ]);
+
+            throw new \RuntimeException(
+                "Resend rejected email {$email->id} (status {$statusCode}): {$message}"
+            );
+        }
+
         $email->update([
-            'resend_email_id' => $result->id ?? null,
+            'resend_email_id' => $result->id,
             'sent_at' => now(),
         ]);
 
