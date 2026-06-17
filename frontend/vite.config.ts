@@ -7,21 +7,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-tiptap': [
-            '@tiptap/react',
-            '@tiptap/starter-kit',
-            '@tiptap/extension-color',
-            '@tiptap/extension-image',
-            '@tiptap/extension-link',
-            '@tiptap/extension-placeholder',
-            '@tiptap/extension-text-align',
-            '@tiptap/extension-text-style',
-            '@tiptap/extension-underline',
-          ],
-          'vendor-realtime': ['pusher-js', 'laravel-echo'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router)[\\/]/.test(id))
+            return 'vendor-react'
+          if (id.includes('@tanstack/react-query')) return 'vendor-query'
+          if (id.includes('@tiptap/')) return 'vendor-tiptap'
+          if (/[\\/]node_modules[\\/](pusher-js|laravel-echo)[\\/]/.test(id))
+            return 'vendor-realtime'
         },
       },
     },
