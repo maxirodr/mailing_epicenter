@@ -1,0 +1,153 @@
+# mailing.epicentersport.com
+
+Sistema de mailing de Epicenter Sport — frontend servido desde `frontend/dist`.
+
+## Despliegue — Configuración NGINX
+
+- **Dominio servido:** `mailing.epicentersport.com`
+- **Ruta raíz:** `/var/www/mailing.epicentersport.com/frontend/dist`
+- **Nota:** el archivo de configuración se llama `mailing_epicenter` en `sites-available` (no coincide con el nombre del dominio).
+
+Contenido completo del archivo `/etc/nginx/sites-available/mailing_epicenter`:
+
+```nginx
+server {
+    listen 80;
+    server_name mailing.epicentersport.com;
+
+    root /var/www/mailing.epicentersport.com/frontend/dist;
+    index index.html;
+
+    # TLS is terminated upstream (Cloudflare); nginx serves plain HTTP on the origin,
+    # matching the other sites on this host.
+
+    # Allow large bodies for attachment uploads (25MB front limit) and Resend webhooks
+    # carrying base64-encoded attachments (~33% overhead on top of raw size).
+    client_max_body_size 50M;
+
+    ## Rate limiting
+    limit_conn conn_per_client 50;
+    limit_req zone=req_per_client burst=120 nodelay;
+
+    error_page 429 @limit429;
+    location @limit429 {
+        default_type application/json;
+        return 429 '{"error":"Too Many Requests","message":"Rate limit exceeded. Please slow down.","retry_after":60}';
+    }
+
+    ## Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https:; connect-src 'self' wss: https://onesignal.com https://*.onesignal.com https://api.onesignal.com; frame-src 'self' https://*.r2.cloudflarestorage.com blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self';" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_min_length 256;
+    gzip_types
+        text/plain
+        text/css
+        text/javascript
+        application/javascript
+        application/json
+        application/ld+json
+        application/xml
+        image/svg+xml
+        font/woff2;
+
+    include /etc/nginx/blockbots.conf;
+    include /etc/nginx/templates/preset_config_php;
+
+    access_log /var/log/nginx/mailing.epicentersport.com-access.log;
+    error_log /var/log/nginx/mailing.epicentersport.com-error.log;
+
+    # SPA fallback
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Laravel API proxy
+    location /api {
+        proxy_pass http://127.0.0.1:8002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Sanctum CSRF cookie
+    location /sanctum {
+        proxy_pass http://127.0.0.1:8002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Broadcasting auth (Laravel Reverb private channels)
+    location /broadcasting {
+        proxy_pass http://127.0.0.1:8002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket (Reverb)
+    location /app {
+        proxy_pass http://127.0.0.1:8090;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+
+    # Webhook endpoint (no CSRF)
+    location /api/webhooks {
+        proxy_pass http://127.0.0.1:8002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static assets caching
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        access_log off;
+    }
+
+    # Deny dotfiles
+    location ~ /\. {
+        deny all;
+    }
+}
+```
+
+### Activar en otro servidor
+
+1. Copiar el archivo a `/etc/nginx/sites-available/mailing_epicenter`.
+2. Crear el symlink en `sites-enabled/`:
+   ```bash
+   ln -s /etc/nginx/sites-available/mailing_epicenter /etc/nginx/sites-enabled/mailing_epicenter
+   ```
+3. Ajustar los certificados SSL según el entorno (en este host la TLS se termina en Cloudflare; si se sirve TLS directo, configurar `ssl_certificate` / `ssl_certificate_key`).
+4. Validar la configuración:
+   ```bash
+   nginx -t
+   ```
+5. Recargar NGINX:
+   ```bash
+   systemctl reload nginx
+   ```
